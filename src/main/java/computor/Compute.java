@@ -1,17 +1,18 @@
-package tutorial;
+package computor;
 
 import org.json.JSONObject;
+import fileio.GetJsonData;
+import tutorial.Task;
 
 import java.io.File;
 import java.util.*;
-import java.text.SimpleDateFormat;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Com {
-    public static void countNullWithSinggleFile(HashSet<JSONObject> jsonObjects) {
+public class Compute {
+    public HashMap<String, Integer> countNullWithSinggleFile(HashSet<JSONObject> jsonObjects) {
         /*
-        Sumary: Count null values from json files
+        Summary: Count null values from json files
         @param jsonObjects: json data reading from json file
          */
         long startTime = System.nanoTime();
@@ -38,20 +39,26 @@ public class Com {
             }
         }
         while (dataIter.hasNext());
-        System.out.println(countMap);
-        System.out.println("Count is : " + count);
+        // System.out.println(countMap);
+        // System.out.println("Count is : " + count);
+
+        // Show processing time
         long totalTime = System.nanoTime() - startTime;
         System.out.println("Processing time of countNull : " + totalTime / 1000000);
+        return countMap;
     }
 
     // Run with 30000 files
-    // Create new task for run multithreads
-    public static int countNullBigFolder(String dir, Integer maxT) {
+    // Create new task for run multithreading
+    public int countNullBigFolder(String dir, Integer maxT) {
         /*
-        Sumary: Count null value of json data from json file
+        Summary: Count null value of json data from json file
         @param dir: directory to list of json files
         @param maxT: max number of threads
          */
+
+        GetJsonData getJsonData = new GetJsonData();
+        Compute compute = new Compute();
 
         // Get list files in dir
         File directoryPath = new File(dir);
@@ -69,7 +76,7 @@ public class Com {
         for (String path : paths) {
             Runnable task = new Task(dir + path);
             pool.execute(task);
-            Com.countNullWithSinggleFile(GetJsonData.getJsonData(dir.concat(path)));
+            compute.countNullWithSinggleFile(getJsonData.getJsonData(dir.concat(path)));
         }
 
         return 0;
